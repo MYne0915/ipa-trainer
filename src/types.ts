@@ -22,5 +22,7 @@ export type WeakWord = {
   word: string;
   /** メモ(発音のポイントなど、任意) */
   note?: string;
+  /** 関連するIPA記号(任意、複数可)。発音練習でこの単語と記号の音をセットで出題する */
+  symbols: string[];
   addedAt: string;
 };

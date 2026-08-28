@@ -164,14 +164,41 @@
   text-align: center;
 }
 
-.quiz__play {
+.practice__score {
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.practice__prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.practice__symbol {
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.practice__tip {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 0 8px;
+}
+
+.practice__record {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 
-.quiz__play-button {
+.practice__record-button {
   border: none;
   border-radius: 999px;
   background: var(--accent);
@@ -182,51 +209,49 @@
   cursor: pointer;
 }
 
-.quiz__hint {
+.practice__record-button--active {
+  background: var(--wrong);
+}
+
+.practice__error {
+  font-size: 13px;
+  color: var(--wrong);
+  text-align: center;
+  margin: 0;
+}
+
+.practice__playback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.practice__hint {
+  margin: 0;
   font-size: 13px;
   opacity: 0.75;
 }
 
-.quiz__choices {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.quiz__choice {
-  border: 1px solid var(--border);
-  background: var(--surface);
-  border-radius: 12px;
-  font-size: 24px;
-  font-weight: 600;
-  padding: 20px 0;
-  cursor: pointer;
-  color: var(--text-h);
-}
-
-.quiz__choice--correct {
-  background: var(--correct-bg);
-  border-color: var(--correct);
-  color: var(--correct);
-}
-
-.quiz__choice--wrong {
-  background: var(--wrong-bg);
-  border-color: var(--wrong);
-  color: var(--wrong);
-}
-
-.quiz__result {
+.practice__rate {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  text-align: center;
+  gap: 10px;
+  width: 100%;
 }
 
-.quiz__result p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
+.practice__rate .primary-button,
+.practice__rate .secondary-button {
+  flex: 1;
+}
+
+.practice__skip {
+  border: none;
+  background: none;
+  color: var(--text);
+  opacity: 0.7;
+  font-size: 13px;
+  padding: 8px 0;
+  cursor: pointer;
 }
 
 .primary-button {
@@ -234,6 +259,17 @@
   border-radius: 10px;
   background: var(--accent);
   color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 0;
+  cursor: pointer;
+}
+
+.secondary-button {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-h);
   font-size: 15px;
   font-weight: 600;
   padding: 14px 0;
@@ -270,12 +306,18 @@
 
 .word-list__item {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface);
   padding: 10px 12px;
+}
+
+.word-list__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .word-list__play {
@@ -301,4 +343,72 @@
   font-size: 14px;
   cursor: pointer;
   padding: 4px;
+}
+
+.word-list__symbols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.symbol-badge {
+  border-radius: 6px;
+  background: var(--accent-bg);
+  color: var(--text-h);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+}
+
+.word-form__label {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.word-form__symbols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.symbol-chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: var(--text-h);
+}
+
+.symbol-chip--selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* --- practice: linked weak word --- */
+.practice__weak-word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  width: 100%;
+}
+
+.chip--accent {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.practice__note {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
 }

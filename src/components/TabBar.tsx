@@ -2,7 +2,7 @@ export type TabKey = "list" | "quiz" | "words";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "list", label: "一覧" },
-  { key: "quiz", label: "クイズ" },
+  { key: "quiz", label: "発音練習" },
   { key: "words", label: "苦手単語" },
 ];
 

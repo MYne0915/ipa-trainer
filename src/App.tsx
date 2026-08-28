@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./App.css";
 import { TabBar, type TabKey } from "./components/TabBar";
 import { PhonemeList } from "./components/PhonemeList";
-import { Quiz } from "./components/Quiz";
+import { PronunciationPractice } from "./components/PronunciationPractice";
 import { WeakWordList } from "./components/WeakWordList";
 import { loadProgress } from "./lib/progress";
 import { loadWeakWords } from "./lib/weakWords";
@@ -16,12 +16,12 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>発音記号トレーナー</h1>
+        <h1>IPA Trainer</h1>
       </header>
 
       <main className="app-main">
         {tab === "list" && <PhonemeList progress={progress} />}
-        {tab === "quiz" && <Quiz onAnswered={setProgress} />}
+        {tab === "quiz" && <PronunciationPractice weakWords={weakWords} onRated={setProgress} />}
         {tab === "words" && <WeakWordList words={weakWords} onChange={setWeakWords} />}
       </main>
 

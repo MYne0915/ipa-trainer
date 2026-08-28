@@ -15,7 +15,7 @@ function saveWeakWords(words: WeakWord[]) {
   localStorage.setItem(KEY, JSON.stringify(words));
 }
 
-export function addWeakWord(word: string, note?: string): WeakWord[] {
+export function addWeakWord(word: string, symbols: string[], note?: string): WeakWord[] {
   const trimmed = word.trim();
   if (!trimmed) return loadWeakWords();
   const words = loadWeakWords();
@@ -23,6 +23,7 @@ export function addWeakWord(word: string, note?: string): WeakWord[] {
     id: crypto.randomUUID(),
     word: trimmed,
     note: note?.trim() || undefined,
+    symbols,
     addedAt: new Date().toISOString(),
   });
   saveWeakWords(words);
