@@ -9,37 +9,51 @@ type Props = {
   onRated: (map: ProgressMap) => void;
 };
 
-type PracticeItem = {
-  phoneme: Phoneme;
-  example: string;
-  weakWord?: WeakWord;
+type QueueWord = {
+  word: string;
+  note?: string;
+  isRegistered: boolean;
 };
 
-function buildPool(weakWords: WeakWord[]): PracticeItem[] {
-  const base: PracticeItem[] = PHONEMES.map((phoneme) => ({ phoneme, example: "" }));
-  const linked: PracticeItem[] = weakWords.flatMap((weakWord) =>
-    weakWord.symbols
-      .map((symbol) => PHONEMES.find((p) => p.symbol === symbol))
-      .filter((p): p is Phoneme => !!p)
-      .map((phoneme) => ({ phoneme, example: "", weakWord })),
-  );
-  return [...base, ...linked];
-}
-
-function pickItem(pool: PracticeItem[]): PracticeItem {
-  const item = pool[Math.floor(Math.random() * pool.length)];
-  const example = item.phoneme.examples[Math.floor(Math.random() * item.phoneme.examples.length)];
-  return { ...item, example };
+function buildQueue(phoneme: Phoneme, weakWords: WeakWord[]): QueueWord[] {
+  const linked = weakWords.filter((w) => w.symbols.includes(phoneme.symbol));
+  if (linked.length > 0) {
+    return linked.map((w) => ({ word: w.word, note: w.note, isRegistered: true }));
+  }
+  return phoneme.examples.map((ex) => ({ word: ex, isRegistered: false }));
 }
 
 export function PronunciationPractice({ weakWords, onRated }: Props) {
-  const [current, setCurrent] = useState(() => pickItem(buildPool(weakWords)));
+  const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
+  const [wordIndex, setWordIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [micError, setMicError] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+
+  const phoneme = selectedSymbol ? (PHONEMES.find((p) => p.symbol === selectedSymbol) ?? null) : null;
+  const queue = phoneme ? buildQueue(phoneme, weakWords) : [];
+  const currentWord = queue.length > 0 ? queue[wordIndex % queue.length] : null;
+
+  const resetRecording = () => {
+    if (recordedUrl) URL.revokeObjectURL(recordedUrl);
+    setRecordedUrl(null);
+    setIsRecording(false);
+    setMicError(null);
+  };
+
+  const selectSymbol = (symbol: string) => {
+    resetRecording();
+    setSelectedSymbol(symbol);
+    setWordIndex(0);
+  };
+
+  const nextWord = () => {
+    resetRecording();
+    setWordIndex((i) => i + 1);
+  };
 
   const startRecording = async () => {
     setMicError(null);
@@ -71,79 +85,85 @@ export function PronunciationPractice({ weakWords, onRated }: Props) {
     setIsRecording(false);
   };
 
-  const next = () => {
-    if (recordedUrl) URL.revokeObjectURL(recordedUrl);
-    setRecordedUrl(null);
-    setIsRecording(false);
-    setMicError(null);
-    setCurrent(pickItem(buildPool(weakWords)));
-  };
-
   const rate = (wasGood: boolean) => {
-    const map = recordAnswer(current.phoneme.symbol, wasGood);
+    if (!phoneme) return;
+    const map = recordAnswer(phoneme.symbol, wasGood);
     onRated(map);
-    next();
+    nextWord();
   };
 
   return (
     <div className="screen practice">
-      <div className="practice__prompt">
-        <span className="practice__symbol">{current.phoneme.symbol}</span>
-        <button type="button" className="chip" onClick={() => speak(current.example)}>
-          🔊 {current.example}
-        </button>
-        {current.weakWord && (
-          <div className="practice__weak-word">
-            <p className="practice__hint">この記号を含む苦手単語</p>
+      <section className="phoneme-group">
+        <h2>練習する発音記号を選ぶ</h2>
+        <div className="practice__symbol-picker">
+          {PHONEMES.map((p) => (
             <button
+              key={p.symbol}
               type="button"
-              className="chip chip--accent"
-              onClick={() => speak(current.weakWord!.word)}
+              className={`symbol-chip${p.symbol === selectedSymbol ? " symbol-chip--selected" : ""}`}
+              onClick={() => selectSymbol(p.symbol)}
             >
-              🔊 単語の音を聞く({current.weakWord.word})
+              {p.symbol}
             </button>
-            {current.weakWord.note && <p className="practice__note">{current.weakWord.note}</p>}
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      </section>
 
-      <div className="practice__record">
-        {!isRecording ? (
-          <button type="button" className="practice__record-button" onClick={startRecording}>
-            🎙 発音を録音する
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="practice__record-button practice__record-button--active"
-            onClick={stopRecording}
-          >
-            ⏹ 録音を止める
-          </button>
-        )}
-        {micError && <p className="practice__error">{micError}</p>}
-      </div>
+      {!phoneme && <p className="empty-hint">発音記号を選ぶと練習が始まります</p>}
 
-      {recordedUrl && (
-        <div className="practice__playback">
-          <button type="button" className="chip" onClick={() => new Audio(recordedUrl).play()}>
-            ▶ 自分の発音を聞く
+      {phoneme && currentWord && (
+        <div className="practice__prompt">
+          <span className="practice__symbol">{phoneme.symbol}</span>
+          <button type="button" className="chip" onClick={() => speak(currentWord.word)}>
+            🔊 {currentWord.word}
           </button>
-          <p className="practice__hint">お手本と聞き比べてどうでしたか</p>
-          <div className="practice__rate">
-            <button type="button" className="primary-button" onClick={() => rate(true)}>
-              👍 できた
-            </button>
-            <button type="button" className="secondary-button" onClick={() => rate(false)}>
-              🔁 もう一度練習
-            </button>
+          {!currentWord.isRegistered && (
+            <p className="practice__hint">単語登録がまだないため、例単語を出しています</p>
+          )}
+          {currentWord.note && <p className="practice__note">{currentWord.note}</p>}
+
+          <div className="practice__record">
+            {!isRecording ? (
+              <button type="button" className="practice__record-button" onClick={startRecording}>
+                🎙 発音を録音する
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="practice__record-button practice__record-button--active"
+                onClick={stopRecording}
+              >
+                ⏹ 録音を止める
+              </button>
+            )}
+            {micError && <p className="practice__error">{micError}</p>}
           </div>
+
+          {recordedUrl && (
+            <div className="practice__playback">
+              <button type="button" className="chip" onClick={() => new Audio(recordedUrl).play()}>
+                ▶ 自分の発音を聞く
+              </button>
+              <p className="practice__hint">お手本と聞き比べてどうでしたか</p>
+              <div className="practice__rate">
+                <button type="button" className="primary-button" onClick={() => rate(true)}>
+                  👍 できた
+                </button>
+                <button type="button" className="secondary-button" onClick={() => rate(false)}>
+                  🔁 もう一度練習
+                </button>
+              </div>
+            </div>
+          )}
+
+          {queue.length > 1 && (
+            <button type="button" className="practice__skip" onClick={nextWord}>
+              次の単語へ({wordIndex % queue.length + 1}/{queue.length})
+            </button>
+          )}
         </div>
       )}
-
-      <button type="button" className="practice__skip" onClick={next}>
-        次の記号へ
-      </button>
     </div>
   );
 }
