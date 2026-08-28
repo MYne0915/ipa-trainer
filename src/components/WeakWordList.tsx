@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PHONEMES } from "../data/phonemes";
 import { speak } from "../lib/speech";
-import { addWeakWord, removeWeakWord } from "../lib/weakWords";
+import { addWeakWord, removeWeakWord, updateWeakWord } from "../lib/weakWords";
 import type { WeakWord } from "../types";
 
 type Props = {
@@ -13,6 +13,7 @@ export function WeakWordList({ words, onChange }: Props) {
   const [word, setWord] = useState("");
   const [note, setNote] = useState("");
   const [symbols, setSymbols] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const toggleSymbol = (symbol: string) => {
     setSymbols((prev) =>
@@ -20,33 +21,47 @@ export function WeakWordList({ words, onChange }: Props) {
     );
   };
 
-  const handleAdd = () => {
-    if (!word.trim()) return;
-    const updated = addWeakWord(word, symbols, note);
-    onChange(updated);
+  const resetForm = () => {
     setWord("");
     setNote("");
     setSymbols([]);
+    setEditingId(null);
+  };
+
+  const handleSubmit = () => {
+    if (!word.trim()) return;
+    const updated = editingId
+      ? updateWeakWord(editingId, word, symbols, note)
+      : addWeakWord(word, symbols, note);
+    onChange(updated);
+    resetForm();
+  };
+
+  const startEdit = (w: WeakWord) => {
+    setWord(w.word);
+    setNote(w.note ?? "");
+    setSymbols(w.symbols);
+    setEditingId(w.id);
   };
 
   return (
     <div className="screen">
       <section className="phoneme-group">
-        <h2>苦手な単語を登録</h2>
+        <h2>{editingId ? "苦手な単語を編集" : "苦手な単語を登録"}</h2>
         <div className="word-form">
           <input
             type="text"
             placeholder="単語(例: comfortable)"
             value={word}
             onChange={(e) => setWord(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />
           <input
             type="text"
             placeholder="メモ(発音記号など任意)"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
           />
 
           <p className="word-form__label">
@@ -65,9 +80,16 @@ export function WeakWordList({ words, onChange }: Props) {
             ))}
           </div>
 
-          <button type="button" className="primary-button" onClick={handleAdd}>
-            追加
-          </button>
+          <div className="word-form__actions">
+            <button type="button" className="primary-button" onClick={handleSubmit}>
+              {editingId ? "更新" : "追加"}
+            </button>
+            {editingId && (
+              <button type="button" className="secondary-button" onClick={resetForm}>
+                キャンセル
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
@@ -82,6 +104,9 @@ export function WeakWordList({ words, onChange }: Props) {
                   🔊 {w.word}
                 </button>
                 {w.note && <span className="word-list__note">{w.note}</span>}
+                <button type="button" className="word-list__edit" onClick={() => startEdit(w)}>
+                  編集
+                </button>
                 <button
                   type="button"
                   className="word-list__delete"

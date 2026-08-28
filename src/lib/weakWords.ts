@@ -33,6 +33,21 @@ export function addWeakWord(word: string, symbols: string[], note?: string): Wea
   return words;
 }
 
+export function updateWeakWord(
+  id: string,
+  word: string,
+  symbols: string[],
+  note?: string,
+): WeakWord[] {
+  const trimmed = word.trim();
+  if (!trimmed) return loadWeakWords();
+  const words = loadWeakWords().map((w) =>
+    w.id === id ? { ...w, word: trimmed, note: note?.trim() || undefined, symbols } : w,
+  );
+  saveWeakWords(words);
+  return words;
+}
+
 export function removeWeakWord(id: string): WeakWord[] {
   const words = loadWeakWords().filter((w) => w.id !== id);
   saveWeakWords(words);
