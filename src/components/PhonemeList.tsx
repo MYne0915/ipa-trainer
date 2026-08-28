@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PHONEMES } from "../data/phonemes";
+import { EXAMPLE_TRANSCRIPTIONS, PHONEMES } from "../data/phonemes";
 import { speak } from "../lib/speech";
 import { needsPractice } from "../lib/progress";
 import type { ProgressMap } from "../types";
@@ -43,7 +43,7 @@ export function PhonemeList({ progress }: Props) {
                   <div className="phoneme-card__play-row">
                     {p.examples.map((ex) => (
                       <button key={ex} type="button" className="chip" onClick={() => speak(ex)}>
-                        🔊 {ex}
+                        🔊 {ex} /{EXAMPLE_TRANSCRIPTIONS[ex]}/
                       </button>
                     ))}
                   </div>
