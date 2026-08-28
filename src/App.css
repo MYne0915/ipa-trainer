@@ -164,12 +164,6 @@
   text-align: center;
 }
 
-.practice__score {
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-}
-
 .practice__prompt {
   display: flex;
   flex-direction: column;

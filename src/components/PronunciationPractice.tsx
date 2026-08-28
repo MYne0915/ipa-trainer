@@ -37,7 +37,6 @@ export function PronunciationPractice({ weakWords, onRated }: Props) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [micError, setMicError] = useState<string | null>(null);
-  const [tally, setTally] = useState({ ok: 0, total: 0 });
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -83,14 +82,11 @@ export function PronunciationPractice({ weakWords, onRated }: Props) {
   const rate = (wasGood: boolean) => {
     const map = recordAnswer(current.phoneme.symbol, wasGood);
     onRated(map);
-    setTally((t) => ({ ok: t.ok + (wasGood ? 1 : 0), total: t.total + 1 }));
     next();
   };
 
   return (
     <div className="screen practice">
-      <p className="practice__score">できた {tally.ok} / {tally.total}</p>
-
       <div className="practice__prompt">
         <span className="practice__symbol">{current.phoneme.symbol}</span>
         <button type="button" className="chip" onClick={() => speak(current.example)}>
