@@ -5,7 +5,10 @@ const KEY = "ipa-trainer:weak-words";
 export function loadWeakWords(): WeakWord[] {
   try {
     const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as WeakWord[]) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as WeakWord[];
+    // symbolsフィールド追加前に登録された既存データを補完する
+    return parsed.map((w) => ({ ...w, symbols: w.symbols ?? [] }));
   } catch {
     return [];
   }
