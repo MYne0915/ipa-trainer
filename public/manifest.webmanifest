@@ -1,0 +1,11 @@
+{
+  "name": "発音記号トレーナー",
+  "short_name": "IPAトレーナー",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2933",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
