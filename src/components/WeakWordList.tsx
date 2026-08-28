@@ -15,11 +15,9 @@ export function WeakWordList({ words, onChange }: Props) {
   const [symbols, setSymbols] = useState<string[]>([]);
 
   const toggleSymbol = (symbol: string) => {
-    setSymbols((prev) => {
-      const next = prev.includes(symbol) ? prev.filter((s) => s !== symbol) : [...prev, symbol];
-      setNote(next.length > 0 ? `/${next.join(" ")}/` : "");
-      return next;
-    });
+    setSymbols((prev) =>
+      prev.includes(symbol) ? prev.filter((s) => s !== symbol) : [...prev, symbol],
+    );
   };
 
   const handleAdd = () => {
@@ -45,14 +43,14 @@ export function WeakWordList({ words, onChange }: Props) {
           />
           <input
             type="text"
-            placeholder="メモ(下で発音記号を選ぶと自動入力されます、編集可)"
+            placeholder="メモ(発音記号など任意)"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
           />
 
           <p className="word-form__label">
-            発音記号を選択(複数可。メモ欄に自動反映され、発音練習で単語と一緒に出題されます)
+            発音記号を選択(複数可。発音練習で単語と一緒に出題されます)
           </p>
           <div className="word-form__symbols">
             {PHONEMES.map((p) => (
