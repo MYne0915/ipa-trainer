@@ -153,28 +153,19 @@
   color: var(--text-h);
 }
 
-/* --- quiz --- */
-.quiz {
-  align-items: stretch;
-}
-
-.quiz__score {
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-}
-
+/* --- practice --- */
 .practice__prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
   text-align: center;
 }
 
 .practice__symbol {
   font-size: 56px;
   font-weight: 700;
+  line-height: 1;
   color: var(--text-h);
 }
 
