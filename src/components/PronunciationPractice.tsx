@@ -93,7 +93,6 @@ export function PronunciationPractice({ weakWords, onRated }: Props) {
 
       <div className="practice__prompt">
         <span className="practice__symbol">{current.phoneme.symbol}</span>
-        <p className="practice__tip">{current.phoneme.tip}</p>
         <button type="button" className="chip" onClick={() => speak(current.example)}>
           🔊 単体の音を聞く({current.example})
         </button>

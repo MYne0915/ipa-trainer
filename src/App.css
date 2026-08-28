@@ -184,13 +184,6 @@
   color: var(--text-h);
 }
 
-.practice__tip {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  padding: 0 8px;
-}
-
 .practice__record {
   display: flex;
   flex-direction: column;
