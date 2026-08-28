@@ -15,16 +15,26 @@ type QueueWord = {
   isRegistered: boolean;
 };
 
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 function buildQueue(phoneme: Phoneme, weakWords: WeakWord[]): QueueWord[] {
   const linked = weakWords.filter((w) => w.symbols.includes(phoneme.symbol));
   if (linked.length > 0) {
-    return linked.map((w) => ({ word: w.word, note: w.note, isRegistered: true }));
+    return shuffle(linked.map((w) => ({ word: w.word, note: w.note, isRegistered: true })));
   }
-  return phoneme.examples.map((ex) => ({ word: ex, isRegistered: false }));
+  return shuffle(phoneme.examples.map((ex) => ({ word: ex, isRegistered: false })));
 }
 
 export function PronunciationPractice({ weakWords, onRated }: Props) {
   const [selectedSymbol, setSelectedSymbol] = useState<string | null>(null);
+  const [queue, setQueue] = useState<QueueWord[]>([]);
   const [wordIndex, setWordIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
@@ -34,7 +44,6 @@ export function PronunciationPractice({ weakWords, onRated }: Props) {
   const chunksRef = useRef<Blob[]>([]);
 
   const phoneme = selectedSymbol ? (PHONEMES.find((p) => p.symbol === selectedSymbol) ?? null) : null;
-  const queue = phoneme ? buildQueue(phoneme, weakWords) : [];
   const currentWord = queue.length > 0 ? queue[wordIndex % queue.length] : null;
 
   const resetRecording = () => {
@@ -45,8 +54,11 @@ export function PronunciationPractice({ weakWords, onRated }: Props) {
   };
 
   const selectSymbol = (symbol: string) => {
+    const nextPhoneme = PHONEMES.find((p) => p.symbol === symbol);
+    if (!nextPhoneme) return;
     resetRecording();
     setSelectedSymbol(symbol);
+    setQueue(buildQueue(nextPhoneme, weakWords));
     setWordIndex(0);
   };
 
